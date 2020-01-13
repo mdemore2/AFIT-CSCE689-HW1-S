@@ -20,7 +20,8 @@ public:
    virtual void closeConn();
 
 private:
-
+   int _sock;
+   struct sockaddr_in _servaddr;
 };
 
 

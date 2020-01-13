@@ -37,8 +37,7 @@ void TCPServer::bindSvr(const char *ip_addr, short unsigned int port) {
     } 
        
     // Forcefully attaching socket to the port 8080 
-    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, 
-                                                  &opt, sizeof(opt))) 
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) 
     { 
         perror("setsockopt"); 
         exit(EXIT_FAILURE); 
@@ -48,8 +47,7 @@ void TCPServer::bindSvr(const char *ip_addr, short unsigned int port) {
     address.sin_port = htons( port ); 
        
     // Forcefully attaching socket to the port 8080 
-    if (bind(server_fd, (struct sockaddr *)&address,  
-                                 sizeof(address))<0) 
+    if (bind(server_fd, (struct sockaddr *)&address,  sizeof(address))<0) 
     { 
         perror("bind failed"); 
         exit(EXIT_FAILURE); 
