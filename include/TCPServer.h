@@ -14,7 +14,9 @@ public:
    void shutdown();
 
 private:
- 
+   int _serverfd;
+   struct sockaddr_in _address;
+
 
 
 };
