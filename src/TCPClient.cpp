@@ -90,6 +90,9 @@ void TCPClient::handleConnection() {
  **********************************************************************************************/
 
 void TCPClient::closeConn() {
+
+    close(TCPClient::_sock);
+
 }
 
 

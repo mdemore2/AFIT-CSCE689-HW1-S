@@ -23,12 +23,14 @@ TCPServer::~TCPServer() {
  **********************************************************************************************/
 
 void TCPServer::bindSvr(const char *ip_addr, short unsigned int port) {
+    
     int server_fd, new_socket, valread; 
     struct sockaddr_in address; 
     int opt = 1; 
     int addrlen = sizeof(address); 
     char buffer[1024] = {0}; 
     char *hello = "Hello from server";
+
      // Creating socket file descriptor 
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) 
     { 
@@ -67,6 +69,7 @@ void TCPServer::bindSvr(const char *ip_addr, short unsigned int port) {
  **********************************************************************************************/
 
 void TCPServer::listenSvr() {
+
     int server_fd = TCPServer::_serverfd;
     int new_socket, valread; 
     struct sockaddr_in address = TCPServer::_address; 
@@ -80,8 +83,7 @@ void TCPServer::listenSvr() {
         perror("listen"); 
         exit(EXIT_FAILURE); 
     } 
-    if ((new_socket = accept(server_fd, (struct sockaddr *)&address,  
-                       (socklen_t*)&addrlen))<0) 
+    if ((new_socket = accept(server_fd, (struct sockaddr *)&address,  (socklen_t*)&addrlen))<0) 
     { 
         perror("accept"); 
         exit(EXIT_FAILURE); 
@@ -99,4 +101,7 @@ void TCPServer::listenSvr() {
  **********************************************************************************************/
 
 void TCPServer::shutdown() {
+
+    close( TCPServer::_serverfd );
+
 }
