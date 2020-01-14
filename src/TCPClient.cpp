@@ -72,15 +72,29 @@ void TCPClient::connectTo(const char *ip_addr, unsigned short port) {
 void TCPClient::handleConnection() {
 
     int sock = TCPClient::_sock; 
-    int valread; 
+    int valread_serv,valread_usr; 
     struct sockaddr_in serv_addr = TCPClient::_servaddr; 
-    char *hello = "Hello from client"; 
-    char buffer[1024] = {0};
+    //char *hello = "Hello from client"; 
+    char buffer_in[1024] = {0};
+    char buffer_out[1024] = {0};
+    //std::string user_in  = "";
+    std::string user_in(buffer_out,0);
+    //send(sock , hello , strlen(hello) , 0 ); 
+    //printf("Hello message sent\n"); 
+    while(user_in != "exit")
+    {
+        valread_serv = read( sock , buffer_in, 1024); 
+        printf("%s\n",buffer_in );
 
-    send(sock , hello , strlen(hello) , 0 ); 
-    printf("Hello message sent\n"); 
-    valread = read( sock , buffer, 1024); 
-    printf("%s\n",buffer ); 
+        valread_usr = read(STDIN_FILENO,buffer_out,1024);
+        //buffer_out[valread_usr] = "\0";
+        //strcat(buffer_out,"\n\0");
+        send(sock,buffer_out,strlen(buffer_out),0);
+        std::string user_in(buffer_out,valread_usr);
+    }
+    
+
+
 }
 
 /**********************************************************************************************

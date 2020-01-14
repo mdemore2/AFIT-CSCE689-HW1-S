@@ -23,6 +23,7 @@ public:
    void bindSvr(const char *ip_addr, unsigned short port);
    void listenSvr();
    void shutdown();
+   void processInput(const char * buffer, int sd);
 
 private:
    int _serverfd;

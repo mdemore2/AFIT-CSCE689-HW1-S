@@ -10,6 +10,7 @@
 #include <sys/types.h>  
 #include <netinet/in.h>  
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros  
+#include <string>
      
 #define TRUE   1  
 #define FALSE  0 
@@ -215,8 +216,11 @@ void TCPServer::listenSvr() {
                 {   
                     //set the string terminating NULL byte on the end  
                     //of the data read  
-                    buffer[valread] = '\0';   
+                    //buffer[valread] = '\0';   
                     send(sd , buffer , strlen(buffer) , 0 );   
+
+                    //handle user input (call function)
+                    processInput(buffer, sd);
                 }   
             }   
         }   
@@ -232,5 +236,72 @@ void TCPServer::listenSvr() {
 void TCPServer::shutdown() {
 
     close( TCPServer::_serverfd );
+
+}
+
+void TCPServer::processInput(const char * buffer, int sd)
+{
+    //char buffer_out[1024] = {0};
+    std::string input(buffer,strlen(buffer));
+    std::string output = "";
+    const char * buffer_out;
+
+    if(input == "hello")
+    {
+        //strcpy(buffer_out,"mmm hello");
+        output = "mmm hello";
+    }
+    else if(input == "1")
+    {
+        //strcpy(buffer_out,"+ 1 = 2");
+        output = "+ 1 = 2";
+    }
+    else if(input == "2")
+    {
+        //strcpy(buffer_out,"+ 2 = 4");
+        output = "+ 2 = 4";
+    }
+    else if(input == "3")
+    {
+        //strcpy(buffer_out,"+ 3  = 6");
+        output = "+ 3 = 6";
+    }
+    else if(input == "4")
+    {
+        //strcpy(buffer_out,"+ 4 = 8");
+        output = "+4 = 8";
+    }
+    else if(input == "5")
+    {
+        //strcpy(buffer_out,"+ 5 = 10");
+        output = "+ 5 = 10";
+    }
+    else if(input == "passwd")
+    {
+        //strcpy(buffer_out,"function not yet implemented");
+        output = "function not yet implemented";
+    }
+    else if(input == "menu")
+    {
+        //strcpy(buffer_out, "Available commands:\n'hello'\n'passwd'\n'menu'\n'1-5'\n'exit'");
+        output = "Available commands:\n'hello'\n'passwd'\n'menu'\n'1-5'\n'exit'";
+    }
+    else if(input == "exit")
+    {
+        //strcpy(buffer_out,"goodbye");
+        output = "goodbye";
+    }
+    else
+    {
+        //strcpy(buffer_out,"invalid command");
+        output = "invalid command xD";
+    }
+
+    
+    buffer_out = output.c_str();
+
+    //strcat(buffer_out,"\0");
+    send(sd,buffer_out,strlen(buffer_out),0);
+    
 
 }
