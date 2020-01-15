@@ -216,11 +216,12 @@ void TCPServer::listenSvr() {
                 {   
                     //set the string terminating NULL byte on the end  
                     //of the data read  
-                    //buffer[valread] = '\0';   
+                    buffer[valread] = '\0';//trim buffer?   
                     send(sd , buffer , strlen(buffer) , 0 );   
 
                     //handle user input (call function)
                     processInput(buffer, sd);
+                    buffer[0] = '\0'; //clear buffer?
                 }   
             }   
         }   
@@ -293,11 +294,15 @@ void TCPServer::processInput(const char * buffer, int sd)
     else
     {
         //strcpy(buffer_out,"invalid command");
-        output = "invalid command xD";
+        output = "invalid command";
     }
 
-    
-    const char * buffer_out = output.c_str();
+    //output += '\0';
+    int outlen = output.length() + 1;
+    char buffer_out[outlen + 1];
+    strcpy(buffer_out,output.c_str());
+    buffer_out[outlen+1] = '\0';
+    //buffer_out[strlen(buffer_out)] = '\0';
 
     //strcat(buffer_out,"\0");
     send(sd,buffer_out,strlen(buffer_out),0);

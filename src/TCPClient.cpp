@@ -87,10 +87,14 @@ void TCPClient::handleConnection() {
         printf("%s\n",buffer_in );
 
         valread_usr = read(STDIN_FILENO,buffer_out,1024);
-        //buffer_out[valread_usr] = "\0";
+        buffer_out[valread_usr] = '\0';
+
         //strcat(buffer_out,"\n\0");
-        send(sock,buffer_out,strlen(buffer_out),0);
+        send(sock,buffer_out,valread_usr,0);
         user_in = std::string(buffer_out,valread_usr);
+        //memset(buffer_in,0,10);
+        buffer_in[0] = '\0';
+        buffer_out[0] = '\0';
     }
     
 
