@@ -15,6 +15,8 @@
 #define TRUE   1  
 #define FALSE  0 
 
+//solution inspired by https://www.geeksforgeeks.org/socket-programming-in-cc-handling-multiple-clients-on-server-without-multi-threading/
+
 TCPServer::TCPServer() {
 
 }
@@ -36,9 +38,9 @@ void TCPServer::bindSvr(const char *ip_addr, short unsigned int port) {
     
     int opt = TRUE;   
     int master_socket;
+
     struct sockaddr_in address;   
                   
-       
          
     //create a master socket  
     if( (master_socket = socket(AF_INET , SOCK_STREAM , 0)) == 0)   
@@ -89,18 +91,19 @@ void TCPServer::listenSvr() {
 
     int opt = TRUE;   
     int master_socket = TCPServer::_serverfd;
+    struct sockaddr_in address = TCPServer::_address;
+
+    char *message = "Hello from the server! Type 'menu' for options.\n";   
+
     int addrlen , new_socket , client_socket[30] ,  
           max_clients = 30 , activity, i , valread , sd;   
     int max_sd;   
-    struct sockaddr_in address = TCPServer::_address;   
          
     char buffer[1025];  //data buffer of 1K  
          
     //set of socket descriptors  
     fd_set readfds;   
          
-    //a message  
-    char *message = "ECHO Daemon v1.0 \r\n";   
      
     //initialise all client_socket[] to 0 so not checked  
     for (i = 0; i < max_clients; i++)   
@@ -166,14 +169,11 @@ void TCPServer::listenSvr() {
             //inform user of socket number - used in send and receive commands  
             printf("New connection , socket fd is %d , ip is : %s , port : %d  \n" , new_socket , inet_ntoa(address.sin_addr) , ntohs 
                   (address.sin_port));   
-           
-            //send new connection greeting message  
+
             if( send(new_socket, message, strlen(message), 0) != strlen(message) )   
             {   
                 perror("send");   
-            }   
-                 
-            puts("Welcome message sent successfully");   
+            }    
                  
             //add new socket to array of sockets  
             for (i = 0; i < max_clients; i++)   
@@ -211,17 +211,13 @@ void TCPServer::listenSvr() {
                     client_socket[i] = 0;   
                 }   
                      
-                //Echo back the message that came in  
                 else 
                 {   
-                    //set the string terminating NULL byte on the end  
-                    //of the data read  
-                    buffer[valread] = '\0';//trim buffer?   
-                    send(sd , buffer , strlen(buffer) , 0 );   
+                    buffer[valread] = '\0';
 
-                    //handle user input (call function)
+                    //handle user input
                     processInput(buffer, sd);
-                    buffer[0] = '\0'; //clear buffer?
+                    buffer[0] = '\0'; //clear buffer (potentially unnecessary?)
                 }   
             }   
         }   
@@ -242,70 +238,59 @@ void TCPServer::shutdown() {
 
 void TCPServer::processInput(const char * buffer, int sd)
 {
-    //char buffer_out[1024] = {0};
-    std::string input(buffer,strlen(buffer));
+    std::string input(buffer,strlen(buffer)); //cast to string for comparison
     std::string output = "";
 
     if(input == "hello\n")
     {
-        //strcpy(buffer_out,"mmm hello");
-        output = "mmm hello";
+        output = "hello user";
     }
     else if(input == "1\n")
     {
-        //strcpy(buffer_out,"+ 1 = 2");
         output = "+ 1 = 2";
     }
     else if(input == "2\n")
     {
-        //strcpy(buffer_out,"+ 2 = 4");
         output = "+ 2 = 4";
     }
     else if(input == "3\n")
     {
-        //strcpy(buffer_out,"+ 3  = 6");
         output = "+ 3 = 6";
     }
     else if(input == "4\n")
     {
-        //strcpy(buffer_out,"+ 4 = 8");
-        output = "+4 = 8";
+        output = "+ 4 = 8";
     }
     else if(input == "5\n")
     {
-        //strcpy(buffer_out,"+ 5 = 10");
         output = "+ 5 = 10";
     }
     else if(input == "passwd\n")
     {
-        //strcpy(buffer_out,"function not yet implemented");
         output = "function not yet implemented";
     }
     else if(input == "menu\n")
     {
-        //strcpy(buffer_out, "Available commands:\n'hello'\n'passwd'\n'menu'\n'1-5'\n'exit'");
         output = "Available commands:\n'hello'\n'passwd'\n'menu'\n'1-5'\n'exit'";
     }
     else if(input == "exit\n")
     {
-        //strcpy(buffer_out,"goodbye");
         output = "goodbye";
     }
     else
     {
-        //strcpy(buffer_out,"invalid command");
+        
         output = "invalid command";
     }
 
-    //output += '\0';
+    
     int outlen = output.length() + 1;
-    char buffer_out[outlen + 1];
-    strcpy(buffer_out,output.c_str());
-    buffer_out[outlen+1] = '\0';
-    //buffer_out[strlen(buffer_out)] = '\0';
+    char buffer_out[outlen + 1]; //create buffer
 
-    //strcat(buffer_out,"\0");
-    send(sd,buffer_out,strlen(buffer_out),0);
+    strcpy(buffer_out,output.c_str());
+    buffer_out[outlen+1] = '\0'; //recast and add null
+    
+    send(sd,buffer_out,strlen(buffer_out),0); //reply to client
     
 
 }
