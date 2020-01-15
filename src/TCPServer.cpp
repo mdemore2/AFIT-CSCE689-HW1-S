@@ -290,7 +290,10 @@ void TCPServer::processInput(const char * buffer, int sd)
     strcpy(buffer_out,output.c_str());
     buffer_out[outlen+1] = '\0'; //recast and add null
     
-    send(sd,buffer_out,strlen(buffer_out),0); //reply to client
+    if( send(sd,buffer_out,strlen(buffer_out),0) != strlen(buffer_out) ) //reply to client
+    {
+        perror("send");
+    }
     
 
 }

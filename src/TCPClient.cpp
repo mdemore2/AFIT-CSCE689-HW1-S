@@ -95,7 +95,11 @@ void TCPClient::handleConnection() {
         buffer_out[valread_usr] = '\0'; //add null terminator
 
         
-        send(sock,buffer_out,valread_usr,0); //send msg
+        if( send(sock,buffer_out,valread_usr,0) != strlen(buffer_out) ) //send msg
+        {
+            perror("send");
+        }
+        
         user_in = std::string(buffer_out,valread_usr); //cast to string for comparison
         
         buffer_in[0] = '\0'; //clear buffers (potentially unnecessary)
