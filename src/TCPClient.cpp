@@ -81,7 +81,7 @@ void TCPClient::handleConnection() {
     std::string user_in(buffer_out,0);
     //send(sock , hello , strlen(hello) , 0 ); 
     //printf("Hello message sent\n"); 
-    while(user_in != "exit")
+    while(user_in != "exit\n")
     {
         valread_serv = read( sock , buffer_in, 1024); 
         printf("%s\n",buffer_in );
@@ -90,7 +90,7 @@ void TCPClient::handleConnection() {
         //buffer_out[valread_usr] = "\0";
         //strcat(buffer_out,"\n\0");
         send(sock,buffer_out,strlen(buffer_out),0);
-        std::string user_in(buffer_out,valread_usr);
+        user_in = std::string(buffer_out,valread_usr);
     }
     
 

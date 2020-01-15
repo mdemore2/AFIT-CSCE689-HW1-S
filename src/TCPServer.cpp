@@ -244,49 +244,48 @@ void TCPServer::processInput(const char * buffer, int sd)
     //char buffer_out[1024] = {0};
     std::string input(buffer,strlen(buffer));
     std::string output = "";
-    const char * buffer_out;
 
-    if(input == "hello")
+    if(input == "hello\n")
     {
         //strcpy(buffer_out,"mmm hello");
         output = "mmm hello";
     }
-    else if(input == "1")
+    else if(input == "1\n")
     {
         //strcpy(buffer_out,"+ 1 = 2");
         output = "+ 1 = 2";
     }
-    else if(input == "2")
+    else if(input == "2\n")
     {
         //strcpy(buffer_out,"+ 2 = 4");
         output = "+ 2 = 4";
     }
-    else if(input == "3")
+    else if(input == "3\n")
     {
         //strcpy(buffer_out,"+ 3  = 6");
         output = "+ 3 = 6";
     }
-    else if(input == "4")
+    else if(input == "4\n")
     {
         //strcpy(buffer_out,"+ 4 = 8");
         output = "+4 = 8";
     }
-    else if(input == "5")
+    else if(input == "5\n")
     {
         //strcpy(buffer_out,"+ 5 = 10");
         output = "+ 5 = 10";
     }
-    else if(input == "passwd")
+    else if(input == "passwd\n")
     {
         //strcpy(buffer_out,"function not yet implemented");
         output = "function not yet implemented";
     }
-    else if(input == "menu")
+    else if(input == "menu\n")
     {
         //strcpy(buffer_out, "Available commands:\n'hello'\n'passwd'\n'menu'\n'1-5'\n'exit'");
         output = "Available commands:\n'hello'\n'passwd'\n'menu'\n'1-5'\n'exit'";
     }
-    else if(input == "exit")
+    else if(input == "exit\n")
     {
         //strcpy(buffer_out,"goodbye");
         output = "goodbye";
@@ -298,7 +297,7 @@ void TCPServer::processInput(const char * buffer, int sd)
     }
 
     
-    buffer_out = output.c_str();
+    const char * buffer_out = output.c_str();
 
     //strcat(buffer_out,"\0");
     send(sd,buffer_out,strlen(buffer_out),0);
