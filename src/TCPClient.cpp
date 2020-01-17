@@ -5,6 +5,8 @@
 #include <unistd.h> 
 #include <string.h>
 
+//solution inspired by https://www.geeksforgeeks.org/socket-programming-cc/
+
 /**********************************************************************************************
  * TCPClient (constructor) - Creates a Stdin file descriptor to simplify handling of user input. 
  *
@@ -31,10 +33,10 @@ TCPClient::~TCPClient() {
 
 void TCPClient::connectTo(const char *ip_addr, unsigned short port) {
 
-    int sock = 0, valread; 
-    struct sockaddr_in serv_addr; 
-    char *hello = "Hello from client"; 
-    char buffer[1024] = {0}; 
+    int sock = 0; 
+    struct sockaddr_in serv_addr;
+
+    //create socket 
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
     { 
         perror("socket creation error"); 
@@ -51,12 +53,14 @@ void TCPClient::connectTo(const char *ip_addr, unsigned short port) {
         exit(EXIT_FAILURE); 
     } 
    
+    //connect to server
     if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) 
     { 
         perror("connection failed"); 
         exit(EXIT_FAILURE); 
     }
 
+    //add to private vars to share with other functions
     TCPClient::_sock = sock;
     TCPClient::_servaddr = serv_addr;
 }
@@ -72,25 +76,34 @@ void TCPClient::connectTo(const char *ip_addr, unsigned short port) {
 void TCPClient::handleConnection() {
 
     int sock = TCPClient::_sock; 
-    int valread_serv,valread_usr; 
     struct sockaddr_in serv_addr = TCPClient::_servaddr; 
-    //char *hello = "Hello from client"; 
+    
     char buffer_in[1024] = {0};
     char buffer_out[1024] = {0};
-    //std::string user_in  = "";
-    std::string user_in(buffer_out,0);
-    //send(sock , hello , strlen(hello) , 0 ); 
-    //printf("Hello message sent\n"); 
-    while(user_in != "exit")
-    {
-        valread_serv = read( sock , buffer_in, 1024); 
-        printf("%s\n",buffer_in );
+    int valread_serv,valread_usr; 
 
-        valread_usr = read(STDIN_FILENO,buffer_out,1024);
-        //buffer_out[valread_usr] = "\0";
-        //strcat(buffer_out,"\n\0");
-        send(sock,buffer_out,strlen(buffer_out),0);
-        std::string user_in(buffer_out,valread_usr);
+   
+    std::string user_in(buffer_out,0);
+   
+    while(user_in != "exit\n")
+    {
+        valread_serv = read( sock , buffer_in, 1024); //read new msg from server
+        buffer_in[valread_serv] = '\0'; //add null terminator
+        printf("%s\n\n",buffer_in );
+
+        valread_usr = read(STDIN_FILENO,buffer_out,1024); //read user input
+        buffer_out[valread_usr] = '\0'; //add null terminator
+
+        
+        if( send(sock,buffer_out,valread_usr,0) != strlen(buffer_out) ) //send msg
+        {
+            perror("send");
+        }
+        
+        user_in = std::string(buffer_out,valread_usr); //cast to string for comparison
+        
+        buffer_in[0] = '\0'; //clear buffers (potentially unnecessary)
+        buffer_out[0] = '\0';
     }
     
 
