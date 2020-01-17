@@ -241,59 +241,67 @@ void TCPServer::processInput(const char * buffer, int sd)
     std::string input(buffer,strlen(buffer)); //cast to string for comparison
     std::string output = "";
 
-    if(input == "hello\n")
+    std::string delimiter = "\n";
+    size_t position = 0;
+    std::string command;
+
+    while((position = input.find(delimiter)) != std::string::npos)//strip out commands if sent multiple at once
     {
-        output = "hello user";
-    }
-    else if(input == "1\n")
-    {
-        output = "+ 1 = 2";
-    }
-    else if(input == "2\n")
-    {
-        output = "+ 2 = 4";
-    }
-    else if(input == "3\n")
-    {
-        output = "+ 3 = 6";
-    }
-    else if(input == "4\n")
-    {
-        output = "+ 4 = 8";
-    }
-    else if(input == "5\n")
-    {
-        output = "+ 5 = 10";
-    }
-    else if(input == "passwd\n")
-    {
-        output = "function not yet implemented";
-    }
-    else if(input == "menu\n")
-    {
-        output = "Available commands:\n'hello'\n'passwd'\n'menu'\n'1-5'\n'exit'";
-    }
-    else if(input == "exit\n")
-    {
-        output = "goodbye";
-    }
-    else
-    {
-        
-        output = "invalid command";
-    }
+        command = input.substr(0,position);
+        input.erase(0,position + delimiter.length());
+
+        if(command == "hello")
+        {
+            output = "hello user";
+        }
+        else if(command == "1")
+        {
+            output = "+ 1 = 2";
+        }
+        else if(command == "2")
+        {
+            output = "+ 2 = 4";
+        }
+        else if(command == "3")
+        {
+            output = "+ 3 = 6";
+        }
+        else if(command == "4")
+        {
+            output = "+ 4 = 8";
+        }
+        else if(command == "5")
+        {
+            output = "+ 5 = 10";
+        }
+        else if(command == "passwd")
+        {
+            output = "function not yet implemented";
+        }
+        else if(command == "menu")
+        {
+            output = "available commands:\n'hello'\n'passwd'\n'menu'\n'1-5'\n'exit'";
+        }
+        else if(command == "exit")
+        {
+            output = "goodbye";
+        }
+        else
+        {
+            output = "invalid command\ntype 'menu' for list of available commands";
+        }
 
     
-    int outlen = output.length() + 1;
-    char buffer_out[outlen + 1]; //create buffer
+        int outlen = output.length() + 1;
+        char buffer_out[outlen + 1]; //create buffer
 
-    strcpy(buffer_out,output.c_str());
-    buffer_out[outlen+1] = '\0'; //recast and add null
+        strcpy(buffer_out,output.c_str());
+        buffer_out[outlen+1] = '\0'; //recast and add null
     
-    if( send(sd,buffer_out,strlen(buffer_out),0) != strlen(buffer_out) ) //reply to client
-    {
-        perror("send");
+        if( send(sd,buffer_out,strlen(buffer_out),0) != strlen(buffer_out) ) //reply to client
+        {
+            perror("send");
+        }
     }
-    
 
 }
