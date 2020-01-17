@@ -15,7 +15,14 @@
 #define TRUE   1  
 #define FALSE  0 
 
-//solution inspired by https://www.geeksforgeeks.org/socket-programming-in-cc-handling-multiple-clients-on-server-without-multi-threading/
+/*
+Name: Mark Demore, 2d Lt
+Course: CSCE689 - Distributed Software Systems
+Assignment: HW1 - Cleint/Server Single Process
+*/
+
+
+//socket programming guided by https://www.geeksforgeeks.org/socket-programming-in-cc-handling-multiple-clients-on-server-without-multi-threading/
 
 TCPServer::TCPServer() {
 
@@ -35,12 +42,10 @@ TCPServer::~TCPServer() {
 
 void TCPServer::bindSvr(const char *ip_addr, short unsigned int port) {
 
-    
     int opt = TRUE;   
     int master_socket;
 
-    struct sockaddr_in address;   
-                  
+    struct sockaddr_in address;                 
          
     //create a master socket  
     if( (master_socket = socket(AF_INET , SOCK_STREAM , 0)) == 0)   
@@ -70,12 +75,9 @@ void TCPServer::bindSvr(const char *ip_addr, short unsigned int port) {
         perror("bind failed");   
         exit(EXIT_FAILURE);   
     }   
-         
- 
    
     TCPServer::_serverfd = master_socket;
     TCPServer::_address = address;
-    
 
 }
 
@@ -99,7 +101,7 @@ void TCPServer::listenSvr() {
           max_clients = 30 , activity, i , valread , sd;   
     int max_sd;   
          
-    char buffer[1025];  //data buffer of 1K  
+    char buffer[1025];
          
     //set of socket descriptors  
     fd_set readfds;   
@@ -200,7 +202,7 @@ void TCPServer::listenSvr() {
                 //incoming message  
                 if ((valread = read( sd , buffer, 1024)) == 0)   
                 {   
-                    //Somebody disconnected , get his details and print  
+                    //Somebody disconnected , get details and print  
                     getpeername(sd , (struct sockaddr*)&address , \ 
                         (socklen_t*)&addrlen);   
                     printf("Host disconnected , ip %s , port %d \n" ,  

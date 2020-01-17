@@ -5,7 +5,13 @@
 #include <unistd.h> 
 #include <string.h>
 
-//solution inspired by https://www.geeksforgeeks.org/socket-programming-cc/
+/*
+Name: Mark Demore, 2d Lt
+Course: CSCE689 - Distributed Software Systems
+Assignment: HW1 - Cleint/Server Single Process
+*/
+
+//socket programming guided by https://www.geeksforgeeks.org/socket-programming-cc/
 
 /**********************************************************************************************
  * TCPClient (constructor) - Creates a Stdin file descriptor to simplify handling of user input. 
@@ -46,7 +52,7 @@ void TCPClient::connectTo(const char *ip_addr, unsigned short port) {
     serv_addr.sin_family = AF_INET; 
     serv_addr.sin_port = htons(port); 
        
-    // Convert IPv4 and IPv6 addresses from text to binary form 
+    // Convert IP addresses from text to binary 
     if(inet_pton(AF_INET, ip_addr, &serv_addr.sin_addr)<=0)  
     { 
         perror("invalid address"); 
@@ -82,10 +88,11 @@ void TCPClient::handleConnection() {
     char buffer_out[1024] = {0};
     int valread_serv,valread_usr; 
 
+    int flag = 1;
    
     std::string user_in(buffer_out,0);
    
-    while(user_in != "exit\n")
+    while(flag > 0)
     {
         valread_serv = read( sock , buffer_in, 1024); //read new msg from server
         buffer_in[valread_serv] = '\0'; //add null terminator
@@ -101,6 +108,22 @@ void TCPClient::handleConnection() {
         }
         
         user_in = std::string(buffer_out,valread_usr); //cast to string for comparison
+
+        std::string delimiter = "\n";
+        size_t position = 0;
+        std::string command;
+
+        while((position = user_in.find(delimiter)) != std::string::npos)//strip out commands if sent multiple at once
+        {
+            command = user_in.substr(0,position);
+            user_in.erase(0,position + delimiter.length());
+
+            if(command == "exit")
+            {
+                flag = -1;
+            }
+        
+        }
         
         buffer_in[0] = '\0'; //clear buffers (potentially unnecessary)
         buffer_out[0] = '\0';
