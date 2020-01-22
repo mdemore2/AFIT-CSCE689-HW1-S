@@ -296,7 +296,7 @@ void TCPServer::processInput(const char * buffer, int sd)
         int outlen = output.length() + 1;
         char buffer_out[outlen + 1]; //create buffer
 
-        strlcpy(buffer_out,output.c_str(),sizeof(output.c_str()));
+        strlcpy(buffer_out,output.c_str(),sizeof(buffer_out));
         buffer_out[outlen+1] = '\0'; //recast and add null
     
         if( send(sd,buffer_out,strlen(buffer_out),0) != strlen(buffer_out) ) //reply to client
