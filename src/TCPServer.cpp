@@ -203,8 +203,7 @@ void TCPServer::listenSvr() {
                 if ((valread = read( sd , buffer, 1024)) == 0)   
                 {   
                     //Somebody disconnected , get details and print  
-                    getpeername(sd , (struct sockaddr*)&address , \ 
-                        (socklen_t*)&addrlen);   
+                    getpeername(sd , (struct sockaddr*)&address , (socklen_t*)&addrlen);   
                     printf("Host disconnected , ip %s , port %d \n" ,  
                           inet_ntoa(address.sin_addr) , ntohs(address.sin_port));   
                          
@@ -297,7 +296,7 @@ void TCPServer::processInput(const char * buffer, int sd)
         int outlen = output.length() + 1;
         char buffer_out[outlen + 1]; //create buffer
 
-        strcpy(buffer_out,output.c_str());
+        strlcpy(buffer_out,output.c_str(),sizeof(output.c_str()));
         buffer_out[outlen+1] = '\0'; //recast and add null
     
         if( send(sd,buffer_out,strlen(buffer_out),0) != strlen(buffer_out) ) //reply to client
